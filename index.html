@@ -1,0 +1,1127 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="data:," />
+    <title>App Tạo Ảnh Thương Hiệu Cá Nhân</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --bg: #f3f2ef;
+        --panel: #ffffff;
+        --panel-2: #eceae5;
+        --ink: #1d1b18;
+        --ink-2: #5d594f;
+        --ink-3: #8a857a;
+        --line: #ddd9d0;
+        --accent: #a97e1f;
+        --accent-ink: #ffffff;
+        --accent-soft: #f3e9cf;
+        --stage: #e7e4dd;
+        --danger: #b3372c;
+        --ok: #2e7d4f;
+        --shadow: 0 10px 30px rgba(29, 27, 24, .10);
+        --radius: 14px;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #131210;
+          --panel: #1e1c19;
+          --panel-2: #28251f;
+          --ink: #f2eee5;
+          --ink-2: #b8b2a4;
+          --ink-3: #847e70;
+          --line: #37332b;
+          --accent: #d3a94e;
+          --accent-ink: #1d1a12;
+          --accent-soft: #38301c;
+          --stage: #0c0b0a;
+          --danger: #e07a6d;
+          --ok: #6fce96;
+          --shadow: 0 10px 30px rgba(0, 0, 0, .45);
+        }
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      body {
+        font-family: "Be Vietnam Pro", system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+        -webkit-font-smoothing: antialiased;
+      }
+      button, [role="button"], select, summary, input:not([type="checkbox"], [type="radio"]) { min-height: 2.25rem; }
+      button { font-family: inherit; cursor: pointer; }
+      input, select, textarea { font-family: inherit; }
+
+      /* ---------- Top bar ---------- */
+      .topbar {
+        display: flex; align-items: center; gap: 14px;
+        padding: 12px 20px;
+        background: var(--panel);
+        border-bottom: 1px solid var(--line);
+        position: sticky; top: 0; z-index: 20;
+      }
+      .topbar .mark {
+        width: 38px; height: 38px; flex: 0 0 auto;
+        border-radius: 10px;
+        background: var(--ink); color: var(--bg);
+        display: grid; place-items: center;
+      }
+      .topbar .mark svg { width: 21px; height: 21px; }
+      .topbar h1 { font-size: 17px; font-weight: 800; margin: 0; letter-spacing: -.01em; }
+      .topbar p { margin: 1px 0 0; font-size: 12.5px; color: var(--ink-2); }
+      .topbar .spacer { flex: 1; }
+      .btn {
+        display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        border: 1px solid var(--line); background: var(--panel); color: var(--ink);
+        border-radius: 10px; padding: 8px 14px; font-size: 13.5px; font-weight: 600;
+        transition: border-color .15s, background .15s, transform .1s;
+        min-height: 40px;
+      }
+      .btn:hover { border-color: var(--ink-3); }
+      .btn:active { transform: translateY(1px); }
+      .btn svg { width: 16px; height: 16px; flex: 0 0 auto; }
+      .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+      .btn.primary:hover { filter: brightness(1.06); }
+      .btn.ghost { background: transparent; }
+      .btn.small { min-height: 36px; padding: 6px 11px; font-size: 12.5px; border-radius: 8px; }
+      .btn:disabled { opacity: .45; cursor: not-allowed; }
+
+      /* ---------- Layout ---------- */
+      .layout {
+        display: grid;
+        grid-template-columns: 372px minmax(0, 1fr);
+        gap: 0;
+        align-items: start;
+        max-width: 1560px; margin: 0 auto;
+      }
+      .panel {
+        background: var(--panel);
+        border-right: 1px solid var(--line);
+        padding: 20px 20px 28px;
+        position: sticky; top: 63px;
+        max-height: calc(100vh - 63px);
+        overflow-y: auto;
+      }
+      .stage { padding: 22px 24px 40px; min-width: 0; }
+
+      /* ---------- Panel steps ---------- */
+      .step { padding: 18px 0 20px; border-bottom: 1px solid var(--line); }
+      .step:first-child { padding-top: 2px; }
+      .step:last-child { border-bottom: none; }
+      .step-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+      .step-num {
+        width: 24px; height: 24px; border-radius: 50%;
+        background: var(--ink); color: var(--bg);
+        font-size: 12.5px; font-weight: 800;
+        display: grid; place-items: center; flex: 0 0 auto;
+      }
+      .step-head h2 { font-size: 14.5px; font-weight: 700; margin: 0; }
+      .step-head .done { margin-left: auto; color: var(--ok); font-size: 12px; font-weight: 700; display: none; align-items: center; gap: 4px; }
+      .step-head .done.show { display: inline-flex; }
+      .hint { font-size: 12.5px; color: var(--ink-2); line-height: 1.55; margin: 8px 0 0; }
+
+      .dropzone {
+        border: 1.5px dashed var(--ink-3); border-radius: var(--radius);
+        padding: 20px 14px; text-align: center; cursor: pointer;
+        background: var(--panel-2);
+        transition: border-color .15s, background .15s;
+      }
+      .dropzone:hover, .dropzone.drag { border-color: var(--accent); background: var(--accent-soft); }
+      .dropzone svg { width: 30px; height: 30px; color: var(--ink-2); }
+      .dropzone strong { display: block; font-size: 13.5px; margin-top: 6px; }
+      .dropzone span { font-size: 12px; color: var(--ink-2); }
+      .photo-row { display: none; align-items: center; gap: 12px; }
+      .photo-row.show { display: flex; }
+      .photo-row img { width: 56px; height: 56px; object-fit: cover; border-radius: 10px; border: 1px solid var(--line); }
+      .photo-row .meta { flex: 1; min-width: 0; }
+      .photo-row .meta strong { display: block; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .photo-row .meta span { font-size: 12px; color: var(--ink-2); }
+
+      .field { margin-bottom: 12px; }
+      .field label { display: block; font-size: 12.5px; font-weight: 600; color: var(--ink-2); margin-bottom: 6px; }
+      .field input[type="text"], .field textarea, .field select {
+        width: 100%; border: 1px solid var(--line); border-radius: 10px;
+        background: var(--panel); color: var(--ink);
+        padding: 9px 12px; font-size: 14px; line-height: 1.45;
+      }
+      .field textarea { resize: vertical; min-height: 64px; }
+      .field input:focus, .field textarea:focus, .field select:focus {
+        outline: 2px solid var(--accent); outline-offset: 0; border-color: transparent;
+      }
+      input[type="range"] { width: 100%; accent-color: var(--accent); min-height: 36px; }
+      .range-row { display: flex; align-items: center; gap: 10px; }
+      .range-row output { font-size: 12.5px; font-weight: 700; min-width: 40px; text-align: right; color: var(--ink-2); }
+
+      .tabs { display: flex; background: var(--panel-2); border-radius: 10px; padding: 3px; gap: 3px; margin-bottom: 14px; }
+      .tabs button {
+        flex: 1; border: none; background: transparent; color: var(--ink-2);
+        font-size: 12.5px; font-weight: 700; border-radius: 8px; padding: 7px 4px; min-height: 38px;
+      }
+      .tabs button.active { background: var(--panel); color: var(--ink); box-shadow: 0 1px 4px rgba(0,0,0,.12); }
+      .tabpane { display: none; }
+      .tabpane.active { display: block; }
+
+      .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+      .chip {
+        border: 1px solid var(--line); background: var(--panel); color: var(--ink);
+        border-radius: 999px; padding: 8px 13px; font-size: 12.5px; font-weight: 600;
+        text-align: left; min-height: 38px;
+      }
+      .chip:hover { border-color: var(--accent); background: var(--accent-soft); }
+      .pick-list { display: grid; gap: 8px; margin-top: 10px; }
+      .pick {
+        border: 1px solid var(--line); background: var(--panel); border-radius: 10px;
+        padding: 10px 12px; font-size: 13.5px; line-height: 1.5; text-align: left; width: 100%;
+        display: flex; gap: 10px; align-items: flex-start; color: var(--ink);
+      }
+      .pick:hover { border-color: var(--accent); }
+      .pick .rank {
+        flex: 0 0 auto; font-size: 11px; font-weight: 800; color: var(--accent-ink);
+        background: var(--accent); border-radius: 6px; padding: 2px 7px; margin-top: 1px;
+      }
+      .empty-note { font-size: 12.5px; color: var(--ink-3); border: 1px dashed var(--line); border-radius: 10px; padding: 12px; line-height: 1.55; }
+
+      .seg { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+      .seg button {
+        border: 1px solid var(--line); background: var(--panel); color: var(--ink);
+        border-radius: 10px; padding: 9px 4px; font-weight: 800; font-size: 15px; min-height: 46px;
+        display: flex; flex-direction: column; align-items: center; gap: 1px;
+      }
+      .seg button small { font-size: 10.5px; font-weight: 600; color: var(--ink-2); }
+      .seg button.active { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+      .seg button.active small { color: var(--ink-3); }
+
+      .swatches { display: flex; gap: 9px; flex-wrap: wrap; }
+      .swatch {
+        width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--line);
+        padding: 0; position: relative;
+      }
+      .swatch.active { border-color: var(--ink); box-shadow: 0 0 0 2px var(--panel), 0 0 0 4px var(--ink); }
+
+      .export-list { display: grid; gap: 8px; }
+      .toast {
+        position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%) translateY(20px);
+        background: var(--ink); color: var(--bg); font-size: 13.5px; font-weight: 600;
+        padding: 11px 18px; border-radius: 999px; opacity: 0; pointer-events: none;
+        transition: opacity .2s, transform .2s; z-index: 50; box-shadow: var(--shadow);
+        max-width: calc(100vw - 32px); text-align: center;
+      }
+      .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+      /* ---------- Stage ---------- */
+      .stage-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+      .stage-head h2 { font-size: 19px; font-weight: 800; margin: 0; letter-spacing: -.01em; }
+      .stage-head p { margin: 0; font-size: 13px; color: var(--ink-2); }
+      .grid { display: grid; gap: 22px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+      .card {
+        background: var(--panel); border: 1px solid var(--line); border-radius: 18px;
+        padding: 14px; box-shadow: var(--shadow);
+      }
+      .card canvas {
+        width: 100%; height: auto; display: block; border-radius: 10px;
+        background: var(--stage); cursor: grab; touch-action: none;
+      }
+      .card canvas:active { cursor: grabbing; }
+      .card-foot { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+      .card-foot .t { flex: 1; min-width: 0; }
+      .card-foot .t strong { display: block; font-size: 13.5px; }
+      .card-foot .t span { font-size: 12px; color: var(--ink-2); }
+      .howto {
+        margin-top: 26px; background: var(--panel); border: 1px solid var(--line);
+        border-radius: 18px; padding: 20px 22px;
+      }
+      .howto h3 { margin: 0 0 12px; font-size: 15px; font-weight: 800; }
+      .howto ol { margin: 0; padding-left: 20px; display: grid; gap: 7px; }
+      .howto li { font-size: 13.5px; line-height: 1.6; color: var(--ink-2); }
+      .howto li strong { color: var(--ink); }
+
+      @media (max-width: 900px) {
+        .layout { grid-template-columns: 1fr; }
+        .panel { position: static; max-height: none; overflow: visible; border-right: none; border-bottom: 1px solid var(--line); order: 2; }
+        .stage { order: 1; padding: 18px 14px 30px; }
+        .topbar { padding: 10px 14px; }
+        .topbar p { display: none; }
+        .grid { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg>
+      </div>
+      <div>
+        <h1>Studio Ảnh Thương Hiệu Cá Nhân</h1>
+        <p>Từ 1 ảnh chân dung — ra ảnh đăng bài chuẩn thương hiệu, kèm chữ &amp; badge</p>
+      </div>
+      <div class="spacer"></div>
+      <button class="btn primary" id="btnDownloadAllTop" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M4 21h16"/></svg>
+        Tải tất cả
+      </button>
+    </header>
+
+    <div class="layout">
+      <!-- ================= PANEL ================= -->
+      <aside class="panel">
+        <!-- Step 1: photo -->
+        <section class="step" id="stepPhoto">
+          <div class="step-head">
+            <span class="step-num">1</span><h2>Ảnh chân dung của khách</h2>
+            <span class="done" id="photoDone">✓ Đã có ảnh</span>
+          </div>
+          <div class="dropzone" id="dropzone" role="button" tabindex="0" aria-label="Tải ảnh chân dung lên">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5a1.5 1.5 0 0 0-2 0L6 19"/></svg>
+            <strong>Kéo thả ảnh vào đây hoặc bấm để chọn</strong>
+            <span>JPG, PNG — ảnh rõ mặt, nhìn thẳng, đủ sáng là đẹp nhất</span>
+          </div>
+          <input type="file" id="fileInput" accept="image/*" hidden />
+          <div class="photo-row" id="photoRow">
+            <img id="photoThumb" alt="Ảnh chân dung đã tải lên" />
+            <div class="meta"><strong id="photoName">anh.jpg</strong><span id="photoSize"></span></div>
+            <button class="btn small" id="btnChangePhoto" type="button">Đổi ảnh</button>
+          </div>
+          <div id="photoControls" style="display:none; margin-top:14px;">
+            <div class="field" style="margin-bottom:4px;">
+              <label for="zoomRange">Phóng to / thu nhỏ ảnh trong khung</label>
+              <div class="range-row">
+                <input type="range" id="zoomRange" min="100" max="260" value="100" />
+                <output id="zoomOut">100%</output>
+              </div>
+            </div>
+            <p class="hint">Mẹo: giữ và kéo trực tiếp trên ảnh xem trước để dời vị trí khuôn mặt vào đúng khung.</p>
+          </div>
+        </section>
+
+        <!-- Step 2: content -->
+        <section class="step">
+          <div class="step-head">
+            <span class="step-num">2</span><h2>Nội dung chữ trên ảnh</h2>
+            <span class="done" id="textDone">✓ Sẵn sàng đăng</span>
+          </div>
+          <div class="tabs" role="tablist">
+            <button type="button" class="active" data-tab="ai">Gợi ý sẵn</button>
+            <button type="button" data-tab="mine">Nội dung của tôi</button>
+            <button type="button" data-tab="manual">Tự nhập</button>
+          </div>
+
+          <div class="tabpane active" id="tab-ai">
+            <div class="field">
+              <label for="industrySel">Ngành nghề / lĩnh vực</label>
+              <select id="industrySel">
+                <option value="giaoduc">Giáo dục &amp; đào tạo</option>
+                <option value="kinhdoanh">Kinh doanh &amp; khởi nghiệp</option>
+                <option value="batdongsan">Bất động sản</option>
+                <option value="lamdep">Làm đẹp &amp; spa</option>
+                <option value="congnghe">Công nghệ &amp; AI</option>
+                <option value="amthuc">Ẩm thực &amp; F&amp;B</option>
+                <option value="chuyen gia">Chuyên gia tự do</option>
+              </select>
+            </div>
+            <button class="btn primary" id="btnSuggest" type="button" style="width:100%;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15.5l.8 2.2 2.2.8-2.2.8L19 21.5l-.8-2.2-2.2-.8 2.2-.8z"/></svg>
+              Gợi ý bộ chữ cho ảnh này
+            </button>
+            <div class="chips" id="suggestChips"></div>
+            <p class="hint">Chỉ đưa ảnh cũng được: bấm gợi ý, app chọn sẵn bộ chữ hợp ngành nghề — ưng câu nào bấm vào là áp lên ảnh ngay.</p>
+          </div>
+
+          <div class="tabpane" id="tab-mine">
+            <div class="field">
+              <label for="rawText">Dán nội dung của bạn (bài viết, ghi chú, ý tưởng…)</label>
+              <textarea id="rawText" rows="5" placeholder="Dán cả đoạn nội dung vào đây. App sẽ lọc ra những câu ngắn, mạnh, đủ ý để đặt lên ảnh đăng ngay."></textarea>
+            </div>
+            <button class="btn primary" id="btnFilter" type="button" style="width:100%;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18l-7 8v5l-4 2v-7z"/></svg>
+              Lọc câu đăng được ngay
+            </button>
+            <div class="pick-list" id="pickList"></div>
+            <p class="hint">Bấm vào một câu để đặt làm tiêu đề chính trên ảnh. Câu dài sẽ tự được rút gọn cho vừa khung chữ.</p>
+          </div>
+
+          <div class="tabpane" id="tab-manual">
+            <p class="hint" style="margin-top:0;">Nhập trực tiếp từng dòng chữ — ảnh xem trước cập nhật ngay khi gõ.</p>
+          </div>
+
+          <div style="margin-top:16px;">
+            <div class="field">
+              <label for="fName">Tên thương hiệu cá nhân</label>
+              <input type="text" id="fName" placeholder="Ví dụ: Nguyễn Nhật Phong" />
+            </div>
+            <div class="field">
+              <label for="fRole">Chức danh / lĩnh vực</label>
+              <input type="text" id="fRole" placeholder="Ví dụ: Giáo viên Tin học • Chia sẻ AI cho giáo viên" />
+            </div>
+            <div class="field">
+              <label for="fHeadline">Tiêu đề chính (câu chữ lớn trên ảnh)</label>
+              <textarea id="fHeadline" rows="2"></textarea>
+            </div>
+            <div class="field">
+              <label for="fSub">Dòng phụ</label>
+              <input type="text" id="fSub" placeholder="Một câu ngắn bổ trợ cho tiêu đề" />
+            </div>
+            <div class="field" style="margin-bottom:2px;">
+              <label for="fBadge">Badge thương hiệu (nhãn nhỏ trên ảnh)</label>
+              <input type="text" id="fBadge" placeholder="Ví dụ: UY TÍN • CHẤT LƯỢNG • TẬN TÂM" />
+            </div>
+          </div>
+        </section>
+
+        <!-- Step 3: quantity & style -->
+        <section class="step">
+          <div class="step-head">
+            <span class="step-num">3</span><h2>Số lượng &amp; phong cách</h2>
+          </div>
+          <div class="field">
+            <label>Số ảnh muốn tạo</label>
+            <div class="seg" id="countSeg">
+              <button type="button" data-count="1" class="active">1<small>ảnh</small></button>
+              <button type="button" data-count="2">2<small>ảnh</small></button>
+              <button type="button" data-count="3">3<small>ảnh</small></button>
+              <button type="button" data-count="4">4<small>ảnh</small></button>
+            </div>
+            <p class="hint">Tạo 1 ảnh để đăng ngay, hoặc bộ 4 ảnh đủ 4 góc chụp như một buổi chụp studio: chính diện, góc 3/4, toàn thân, cận mặt.</p>
+          </div>
+          <div class="field">
+            <label for="ratioSel">Khổ ảnh</label>
+            <select id="ratioSel">
+              <option value="1:1">Vuông 1:1 — đăng Facebook / Instagram</option>
+              <option value="4:5">Dọc 4:5 — bài đăng chiếm màn hình</option>
+              <option value="9:16">Dọc 9:16 — Story / Reels</option>
+              <option value="16:9">Ngang 16:9 — ảnh bìa / thumbnail</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Font chữ tiêu đề</label>
+            <div class="seg" id="fontSeg" style="grid-template-columns:repeat(3,1fr);">
+              <button type="button" data-font="modern" class="active" style="font-size:13px;">Hiện đại</button>
+              <button type="button" data-font="serif" style="font-size:13px;">Sang trọng</button>
+              <button type="button" data-font="bold" style="font-size:13px;">Mạnh mẽ</button>
+            </div>
+          </div>
+          <div class="field">
+            <label>Màu điểm nhấn thương hiệu</label>
+            <div class="swatches" id="swatches">
+              <button type="button" class="swatch active" data-accent="#C9A24B" style="background:#C9A24B" aria-label="Vàng đồng"></button>
+              <button type="button" class="swatch" data-accent="#1F7A5C" style="background:#1F7A5C" aria-label="Xanh ngọc"></button>
+              <button type="button" class="swatch" data-accent="#7A2230" style="background:#7A2230" aria-label="Đỏ burgundy"></button>
+              <button type="button" class="swatch" data-accent="#274472" style="background:#274472" aria-label="Xanh navy"></button>
+              <button type="button" class="swatch" data-accent="#E8E2D4" style="background:#E8E2D4" aria-label="Trắng kem"></button>
+            </div>
+          </div>
+          <div class="field" style="margin-bottom:2px;">
+            <label for="scrimRange">Độ tối nền sau chữ (cho chữ dễ đọc)</label>
+            <div class="range-row">
+              <input type="range" id="scrimRange" min="0" max="85" value="45" />
+              <output id="scrimOut">45%</output>
+            </div>
+          </div>
+        </section>
+
+        <!-- Step 4: export -->
+        <section class="step">
+          <div class="step-head">
+            <span class="step-num">4</span><h2>Xuất ảnh đăng ngay</h2>
+          </div>
+          <div class="export-list" id="exportList"></div>
+          <button class="btn primary" id="btnDownloadAll" type="button" style="width:100%; margin-top:10px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M4 21h16"/></svg>
+            Tải tất cả ảnh (PNG chất lượng cao)
+          </button>
+          <p class="hint">Ảnh xuất ra đúng kích thước đăng bài (cạnh dài 1440px), chữ và badge đã gắn sẵn — tải về là đăng được ngay.</p>
+        </section>
+      </aside>
+
+      <!-- ================= STAGE ================= -->
+      <main class="stage">
+        <div class="stage-head">
+          <h2 id="stageTitle">Bản xem trước</h2>
+          <p id="stageSub">Tải ảnh chân dung lên để bắt đầu — hoặc xem trước bố cục mẫu bên dưới.</p>
+        </div>
+        <div class="grid" id="previewGrid"></div>
+
+        <div class="howto">
+          <h3>Cách dùng trong 30 giây</h3>
+          <ol>
+            <li><strong>Tải ảnh chân dung</strong> của khách lên (rõ mặt, đủ sáng).</li>
+            <li><strong>Chọn nội dung:</strong> để app gợi ý sẵn theo ngành nghề, hoặc dán nội dung của khách để app lọc câu hay nhất, hoặc tự nhập từng dòng.</li>
+            <li><strong>Chọn số lượng</strong> 1–4 ảnh và khổ ảnh phù hợp kênh đăng.</li>
+            <li><strong>Tải PNG</strong> về và đăng ngay — mọi ảnh trong cùng một bộ giữ đồng nhất một phong cách thương hiệu.</li>
+          </ol>
+        </div>
+      </main>
+    </div>
+
+    <div class="toast" id="toast" role="status"></div>
+
+    <script>
+      "use strict";
+
+      /* =============== Data: bộ chữ gợi ý theo ngành nghề =============== */
+      var SUGGESTIONS = {
+        "giaoduc": [
+          { h: "Dạy học là gieo hạt cho tương lai", s: "Mỗi bài giảng hôm nay là một ngày mai tốt hơn", b: "GIÁO DỤC • TẬN TÂM • TRUYỀN CẢM HỨNG" },
+          { h: "Công nghệ không thay thế thầy cô — nó khuếch đại thầy cô", s: "Ứng dụng AI đúng cách để dạy nhẹ hơn, học sâu hơn", b: "ĐỔI MỚI • SÁNG TẠO • VÌ HỌC SINH" },
+          { h: "Học sinh nhớ nhất người thầy làm mình tin vào bản thân", s: "Dạy bằng cả chuyên môn và trái tim", b: "NGƯỜI THẦY • NGƯỜI TRUYỀN LỬA" },
+          { h: "Mỗi đứa trẻ đều có một thế mạnh đang chờ được mở khóa", s: "Việc của người thầy là tìm ra chiếc chìa khóa đó", b: "KHƠI DẬY • TIỀM NĂNG • TƯƠNG LAI" }
+        ],
+        "kinhdoanh": [
+          { h: "Khách hàng mua niềm tin trước khi mua sản phẩm", s: "Xây thương hiệu cá nhân là khoản đầu tư lời nhất", b: "UY TÍN • CHẤT LƯỢNG • DÀI HẠN" },
+          { h: "Kinh doanh bền vững bắt đầu từ một lời hứa được giữ", s: "Nói được — làm được — làm hơn kỳ vọng", b: "CAM KẾT • THỰC CHIẾN • KẾT QUẢ" },
+          { h: "Thương hiệu mạnh không cần hét to — khách tự tìm đến", s: "Giá trị thật là chiến lược marketing tốt nhất", b: "THƯƠNG HIỆU • GIÁ TRỊ • NIỀM TIN" },
+          { h: "Muốn đi xa, hãy xây hệ thống — đừng chỉ bán sức", s: "Tư duy chủ doanh nghiệp, hành động mỗi ngày", b: "KHỞI NGHIỆP • HỆ THỐNG • BỨT PHÁ" }
+        ],
+        "batdongsan": [
+          { h: "Mua nhà là mua cả một tổ ấm — không chỉ là mét vuông", s: "Tư vấn bằng sự am hiểu và cái tâm của người trong nghề", b: "UY TÍN • MINH BẠCH • TẬN TÂM" },
+          { h: "Vị trí tốt hôm nay là tài sản vững ngày mai", s: "Phân tích kỹ từng dự án trước khi giới thiệu đến khách", b: "ĐẦU TƯ • AN TOÀN • SINH LỜI" },
+          { h: "Người môi giới giỏi bán sự an tâm, không bán áp lực", s: "Đồng hành từ lúc xem nhà đến ngày nhận sổ", b: "ĐỒNG HÀNH • TRÁCH NHIỆM • CHUYÊN NGHIỆP" },
+          { h: "Thị trường có sóng — người có tầm nhìn thì có bờ", s: "Cập nhật xu hướng, chọn đúng thời điểm cho khách hàng", b: "TẦM NHÌN • KINH NGHIỆM • THỊ TRƯỜNG" }
+        ],
+        "lamdep": [
+          { h: "Vẻ đẹp bền vững bắt đầu từ làn da khỏe", s: "Chăm sóc đúng khoa học, đẹp theo cách tự nhiên nhất", b: "LÀM ĐẸP • AN TOÀN • KHOA HỌC" },
+          { h: "Tự tin là lớp trang điểm đẹp nhất của phụ nữ", s: "Chúng tôi chỉ giúp bạn tỏa sáng hơn chính mình", b: "TỰ TIN • RẠNG RỠ • LÀ CHÍNH MÌNH" },
+          { h: "Đẹp không cần nhanh — đẹp cần đúng cách", s: "Liệu trình cá nhân hóa cho từng làn da, từng khách hàng", b: "CÁ NHÂN HÓA • TẬN TÂM • HIỆU QUẢ" },
+          { h: "Khách hàng quay lại vì kết quả, ở lại vì sự tử tế", s: "Mỗi liệu trình là một lời cam kết về chất lượng", b: "CHẤT LƯỢNG • TỬ TẾ • ĐỒNG HÀNH" }
+        ],
+        "congnghe": [
+          { h: "AI không lấy việc của bạn — người biết dùng AI sẽ làm việc đó", s: "Học công nghệ sớm một bước, cơ hội mở ra nhiều bước", b: "CÔNG NGHỆ • AI • TƯƠNG LAI" },
+          { h: "Tự động hóa việc lặp lại — để con người làm việc sáng tạo", s: "Xây hệ thống thông minh cho đội nhóm và doanh nghiệp", b: "TỰ ĐỘNG HÓA • HIỆU SUẤT • ĐỔI MỚI" },
+          { h: "Công nghệ chỉ có giá trị khi nó giải quyết đúng vấn đề", s: "Tư duy sản phẩm trước, công cụ theo sau", b: "GIẢI PHÁP • THỰC TẾ • HIỆU QUẢ" },
+          { h: "Người thắng trong kỷ nguyên AI là người học nhanh nhất", s: "Cập nhật mỗi ngày, ứng dụng ngay vào công việc", b: "HỌC HỎI • ỨNG DỤNG • DẪN ĐẦU" }
+        ],
+        "amthuc": [
+          { h: "Món ngon bắt đầu từ nguyên liệu tử tế", s: "Nấu bằng cái tâm — khách cảm nhận được trong từng miếng", b: "NGON • SẠCH • TỬ TẾ" },
+          { h: "Vị ngon làm khách đến — sự chân thành làm khách quay lại", s: "Giữ trọn hương vị truyền thống trong từng món ăn", b: "TRUYỀN THỐNG • CHÂN THÀNH • CHẤT LƯỢNG" },
+          { h: "Bếp là nơi lửa nghề không bao giờ tắt", s: "Mỗi món ăn ra bàn là một lời chào trân trọng", b: "ĐAM MÊ • TỈ MỈ • TRÂN TRỌNG" },
+          { h: "Ăn ngon là hạnh phúc giản dị nhất mỗi ngày", s: "Phục vụ những bữa ăn ngon như nấu cho người nhà", b: "HẠNH PHÚC • GẦN GŨI • NHƯ Ở NHÀ" }
+        ],
+        "chuyen gia": [
+          { h: "Chuyên môn của bạn xứng đáng được nhiều người biết đến", s: "Xây thương hiệu cá nhân từ giá trị thật mỗi ngày", b: "CHUYÊN GIA • UY TÍN • GIÁ TRỊ THẬT" },
+          { h: "Người ta theo dõi bạn vì kiến thức — ở lại vì con người bạn", s: "Chia sẻ đều đặn, chân thành và có ích", b: "CHIA SẺ • CHÂN THÀNH • BỀN BỈ" },
+          { h: "Thương hiệu cá nhân là tài sản không ai lấy được của bạn", s: "Đầu tư vào bản thân là khoản đầu tư an toàn nhất", b: "PHÁT TRIỂN • BẢN THÂN • DÀI HẠN" },
+          { h: "Làm tốt thôi chưa đủ — hãy để đúng người nhìn thấy", s: "Hiện diện đúng cách, đúng nơi, đúng giá trị", b: "HIỆN DIỆN • ĐÚNG NGƯỜI • ĐÚNG GIÁ TRỊ" }
+        ]
+      };
+
+      /* =============== Variants (theo skill: 4 góc chụp) =============== */
+      var VARIANTS = [
+        { id: "v1", name: "Mẫu 1 — Chính diện", desc: "Cười nhẹ, phông văn phòng mờ", style: "office" },
+        { id: "v2", name: "Mẫu 2 — Góc 3/4", desc: "Tay khoanh trước ngực, nền xám studio", style: "split" },
+        { id: "v3", name: "Mẫu 3 — Toàn thân", desc: "Đứng thẳng, phông ngoài trời sáng", style: "outdoor" },
+        { id: "v4", name: "Mẫu 4 — Cận mặt", desc: "Ánh sáng studio, phông đen sang trọng", style: "studio" }
+      ];
+
+      var RATIOS = { "1:1": [1, 1], "4:5": [4, 5], "9:16": [9, 16], "16:9": [16, 9] };
+      var FONTS = {
+        modern: { family: '"Be Vietnam Pro", sans-serif', weight: 800, italic: false },
+        serif: { family: '"Playfair Display", serif', weight: 700, italic: true },
+        bold: { family: '"Montserrat", sans-serif', weight: 800, italic: false }
+      };
+
+      /* =============== State =============== */
+      var state = {
+        img: null, imgName: "", imgW: 0, imgH: 0,
+        zoom: 1, panX: 0, panY: 0,
+        count: 1, ratio: "1:1", font: "modern", accent: "#C9A24B", scrim: 0.45,
+        name: "", role: "", headline: "", sub: "", badge: "",
+        suggestIdx: 0
+      };
+
+      var $ = function (id) { return document.getElementById(id); };
+      var grid = $("previewGrid");
+
+      /* =============== Toast =============== */
+      var toastTimer = null;
+      function toast(msg) {
+        var t = $("toast"); t.textContent = msg; t.classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function () { t.classList.remove("show"); }, 2600);
+      }
+
+      /* =============== Canvas helpers =============== */
+      function rr(ctx, x, y, w, h, r) {
+        r = Math.min(r, w / 2, h / 2);
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.arcTo(x + w, y, x + w, y + h, r);
+        ctx.arcTo(x + w, y + h, x, y + h, r);
+        ctx.arcTo(x, y + h, x, y, r);
+        ctx.arcTo(x, y, x + w, y, r);
+        ctx.closePath();
+      }
+
+      // Draw image covering rect with zoom + pan. focusY: 0 top .. 1 bottom bias.
+      function drawCover(ctx, img, x, y, w, h, zoom, panX, panY, focusY) {
+        var iw = img.naturalWidth || img.width, ih = img.naturalHeight || img.height;
+        var scale = Math.max(w / iw, h / ih) * (zoom || 1);
+        var dw = iw * scale, dh = ih * scale;
+        var maxPanX = Math.max(0, (dw - w) / 2), maxPanY = Math.max(0, (dh - h) / 2);
+        var dx = x + (w - dw) / 2 + (panX || 0) * maxPanX;
+        var dy = y + (h - dh) * (focusY == null ? 0.5 : focusY) + (panY || 0) * maxPanY;
+        ctx.save();
+        ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip();
+        ctx.drawImage(img, dx, dy, dw, dh);
+        ctx.restore();
+        return { dx: dx, dy: dy, dw: dw, dh: dh };
+      }
+
+      function drawPlaceholder(ctx, W, H, tone, caption) {
+        var g = ctx.createLinearGradient(0, 0, W, H);
+        if (tone === "dark") { g.addColorStop(0, "#2b2926"); g.addColorStop(1, "#131211"); }
+        else if (tone === "gray") { g.addColorStop(0, "#8f8c85"); g.addColorStop(1, "#5d5a54"); }
+        else { g.addColorStop(0, "#b9ac93"); g.addColorStop(1, "#6f6350"); }
+        ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+        // silhouette
+        ctx.fillStyle = "rgba(255,255,255,.20)";
+        var cx = W / 2, cy = H * 0.42, r = Math.min(W, H) * 0.13;
+        ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(cx - r * 2.1, H * 0.98);
+        ctx.bezierCurveTo(cx - r * 2.0, H * 0.66, cx - r * 0.9, H * 0.60, cx, H * 0.60);
+        ctx.bezierCurveTo(cx + r * 0.9, H * 0.60, cx + r * 2.0, H * 0.66, cx + r * 2.1, H * 0.98);
+        ctx.closePath(); ctx.fill();
+        if (caption) {
+          ctx.fillStyle = "rgba(255,255,255,.75)";
+          ctx.font = "600 " + Math.round(W * 0.032) + 'px "Be Vietnam Pro", sans-serif';
+          ctx.textAlign = "center";
+          ctx.fillText("Ảnh chân dung của khách sẽ hiện ở đây", cx, H * 0.90);
+        }
+      }
+
+      function wrapLines(ctx, text, maxW) {
+        var words = String(text || "").split(/\s+/).filter(Boolean);
+        var lines = [], cur = "";
+        for (var i = 0; i < words.length; i++) {
+          var test = cur ? cur + " " + words[i] : words[i];
+          if (ctx.measureText(test).width > maxW && cur) { lines.push(cur); cur = words[i]; }
+          else cur = test;
+        }
+        if (cur) lines.push(cur);
+        return lines;
+      }
+
+      function luminance(hex) {
+        var c = hex.replace("#", "");
+        var r = parseInt(c.substr(0, 2), 16) / 255, g = parseInt(c.substr(2, 2), 16) / 255, b = parseInt(c.substr(4, 2), 16) / 255;
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+      }
+
+      function fitHeadline(ctx, text, maxW, base, font) {
+        var size = base;
+        while (size > base * 0.45) {
+          ctx.font = (font.italic ? "italic " : "") + font.weight + " " + size + "px " + font.family;
+          if (wrapLines(ctx, text, maxW).length <= 3) break;
+          size -= 6;
+        }
+        ctx.font = (font.italic ? "italic " : "") + font.weight + " " + size + "px " + font.family;
+        return { size: size, lines: wrapLines(ctx, text, maxW) };
+      }
+
+      /* =============== Variant renderers (work at any W,H; coords scaled to W=1080 base) =============== */
+      function renderVariant(ctx, W, H, v) {
+        var S = W / 1080; // scale unit
+        var font = FONTS[state.font];
+        var name = state.name || "Tên của bạn";
+        var role = state.role || "Chức danh • Lĩnh vực của bạn";
+        var headline = state.headline || "Câu chữ thương hiệu của bạn sẽ nằm ở đây";
+        var sub = state.sub || "";
+        var badge = state.badge || "";
+        var accent = state.accent;
+        ctx.clearRect(0, 0, W, H);
+        ctx.textBaseline = "alphabetic";
+
+        if (v.style === "office") {
+          // blurred photo backdrop + framed portrait card + text below
+          if (state.img) {
+            ctx.save(); ctx.filter = "blur(" + Math.round(28 * S) + "px) brightness(0.72) saturate(0.9)";
+            drawCover(ctx, state.img, -40 * S, -40 * S, W + 80 * S, H + 80 * S, 1.05, 0, 0, 0.4);
+            ctx.restore();
+          } else drawPlaceholder(ctx, W, H, "warm", false);
+          var cardW = W * 0.56, cardH = H * 0.46, cardX = (W - cardW) / 2, cardY = H * 0.06;
+          ctx.save();
+          ctx.shadowColor = "rgba(0,0,0,.45)"; ctx.shadowBlur = 50 * S; ctx.shadowOffsetY = 18 * S;
+          rr(ctx, cardX, cardY, cardW, cardH, 26 * S); ctx.fillStyle = "#222"; ctx.fill();
+          ctx.restore();
+          ctx.save(); rr(ctx, cardX, cardY, cardW, cardH, 26 * S); ctx.clip();
+          if (state.img) drawCover(ctx, state.img, cardX, cardY, cardW, cardH, state.zoom, state.panX, state.panY, 0.25);
+          else {
+            ctx.fillStyle = "#3a372f"; ctx.fillRect(cardX, cardY, cardW, cardH);
+            ctx.fillStyle = "rgba(255,255,255,.22)";
+            var ccx = cardX + cardW / 2, ccy = cardY + cardH * 0.38, cr = cardW * 0.13;
+            ctx.beginPath(); ctx.arc(ccx, ccy, cr, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath();
+            ctx.moveTo(ccx - cr * 2.1, cardY + cardH);
+            ctx.bezierCurveTo(ccx - cr * 2, cardY + cardH * 0.68, ccx - cr * 0.9, cardY + cardH * 0.62, ccx, cardY + cardH * 0.62);
+            ctx.bezierCurveTo(ccx + cr * 0.9, cardY + cardH * 0.62, ccx + cr * 2, cardY + cardH * 0.68, ccx + cr * 2.1, cardY + cardH);
+            ctx.closePath(); ctx.fill();
+          }
+          ctx.restore();
+          ctx.strokeStyle = "rgba(255,255,255,.35)"; ctx.lineWidth = 2 * S;
+          rr(ctx, cardX, cardY, cardW, cardH, 26 * S); ctx.stroke();
+          // name + role
+          var ty = cardY + cardH + 74 * S;
+          ctx.textAlign = "center";
+          ctx.fillStyle = accent;
+          ctx.font = "700 " + Math.round(29 * S) + 'px "Be Vietnam Pro", sans-serif';
+          ctx.fillText(role.toUpperCase(), W / 2, ty);
+          var fit = fitHeadline(ctx, headline, W * 0.86, 70 * S, font);
+          ctx.fillStyle = "#ffffff";
+          var ly = ty + 26 * S;
+          fit.lines.forEach(function (ln) { ly += fit.size * 1.16; ctx.fillText(ln, W / 2, ly); });
+          if (sub && ly < H - 300 * S) {
+            ctx.font = "500 " + Math.round(29 * S) + 'px "Be Vietnam Pro", sans-serif';
+            ctx.fillStyle = "rgba(255,255,255,.85)";
+            wrapLines(ctx, sub, W * 0.8).slice(0, 2).forEach(function (ln) { ly += 43 * S; ctx.fillText(ln, W / 2, ly); });
+          }
+          ctx.fillStyle = "#ffffff";
+          ctx.font = "800 " + Math.round(34 * S) + 'px "Be Vietnam Pro", sans-serif';
+          ctx.fillText(name, W / 2, H - 118 * S);
+          ctx.save(); ctx.translate(0, 0);
+          drawBadgeScaled(ctx, badge, W / 2, H - 96 * S, accent, S);
+          ctx.restore();
+        }
+
+        if (v.style === "split") {
+          // gray studio panel left, photo right
+          var panelW = W * 0.54;
+          var g = ctx.createLinearGradient(0, 0, panelW, H);
+          g.addColorStop(0, "#4c4a45"); g.addColorStop(1, "#33312d");
+          ctx.fillStyle = g; ctx.fillRect(0, 0, panelW, H);
+          if (state.img) drawCover(ctx, state.img, panelW, 0, W - panelW, H, state.zoom * 1.02, state.panX, state.panY, 0.22);
+          else { ctx.fillStyle = "#6b6862"; ctx.fillRect(panelW, 0, W - panelW, H); drawPlaceholderSide(ctx, panelW, 0, W - panelW, H); }
+          var x0 = 64 * S, maxW = panelW - 110 * S;
+          ctx.textAlign = "left";
+          ctx.fillStyle = accent; ctx.fillRect(x0, 84 * S, 74 * S, 7 * S);
+          ctx.fillStyle = "#ffffff";
+          ctx.font = "800 " + Math.round(40 * S) + 'px "Be Vietnam Pro", sans-serif';
+          ctx.fillText(name, x0, 160 * S);
+          ctx.font = "600 " + Math.round(27 * S) + 'px "Be Vietnam Pro", sans-serif';
+          ctx.fillStyle = "rgba(255,255,255,.75)";
+          wrapLines(ctx, role, maxW).slice(0, 2).forEach(function (ln, i) { ctx.fillText(ln, x0, 205 * S + i * 40 * S); });
+          var fit2 = fitHeadline(ctx, headline, maxW, 68 * S, font);
+          ctx.fillStyle = "#ffffff";
+          var ly2 = H * 0.36;
+          fit2.lines.forEach(function (ln) { ly2 += fit2.size * 1.18; ctx.fillText(ln, x0, ly2); });
+          if (sub && ly2 < H - 190 * S) {
+            ctx.font = "500 " + Math.round(28 * S) + 'px "Be Vietnam Pro", sans-serif';
+            ctx.fillStyle = "rgba(255,255,255,.82)";
+            wrapLines(ctx, sub, maxW).slice(0, 3).forEach(function (ln) { ly2 += 42 * S; ctx.fillText(ln, x0, ly2); });
+          }
+          if (badge) {
+            ctx.font = "700 " + Math.round(24 * S) + 'px "Be Vietnam Pro", sans-serif';
+            var bw = ctx.measureText(badge).width + 44 * S;
+            ctx.fillStyle = accent; rr(ctx, x0, H - 120 * S, bw, 54 * S, 27 * S); ctx.fill();
+            ctx.fillStyle = luminance(accent) > 0.6 ? "#1d1a12" : "#fff";
+            ctx.textBaseline = "middle";
+            ctx.fillText(badge, x0 + 22 * S, H - 120 * S + 28 * S);
+            ctx.textBaseline = "alphabetic";
+          }
+        }
+
+        if (v.style === "outdoor") {
+          if (state.img) drawCover(ctx, state.img, 0, 0, W, H, state.zoom, state.panX, state.panY, 0.3);
+          else drawPlaceholder(ctx, W, H, "warm", false);
+          var sc = ctx.createLinearGradient(0, H * 0.34, 0, H);
+          sc.addColorStop(0, "rgba(20,14,4,0)");
+          sc.addColorStop(1, "rgba(20,14,4," + (0.35 + state.scrim * 0.75) + ")");
+          ctx.fillStyle = sc; ctx.fillRect(0, 0, W, H);
+          drawBadgeScaled(ctx, badge, W / 2, 56 * S, accent, S);
+          ctx.textAlign = "center";
+          var fit3 = fitHeadline(ctx, headline, W * 0.88, 80 * S, font);
+          ctx.fillStyle = "#ffffff";
+          var totalH3 = fit3.lines.length * fit3.size * 1.16;
+          var ly3 = H - 292 * S - totalH3;
+          fit3.lines.forEach(function (ln) { ly3 += fit3.size * 1.16; ctx.fillText(ln, W / 2, ly3); });
+          if (sub) {
+            ctx.font = "500 " + Math.round(30 * S) + 'px "Be Vietnam Pro", sans-serif';
+            ctx.fillStyle = "rgba(255,255,255,.88)";
+            wrapLines(ctx, sub, W * 0.82).slice(0, 2).forEach(function (ln) { ly3 += 46 * S; ctx.fillText(ln, W / 2, ly3); });
+          }
+          ctx.fillStyle = accent; ctx.fillRect(W / 2 - 37 * S, H - 168 * S, 74 * S, 6 * S);
+          ctx.fillStyle = "#ffffff";
+          ctx.font = "800 " + Math.round(38 * S) + 'px "Be Vietnam Pro", sans-serif';
+          ctx.fillText(name, W / 2, H - 108 * S);
+          ctx.font = "600 " + Math.round(26 * S) + 'px "Be Vietnam Pro", sans-serif';
+          ctx.fillStyle = "rgba(255,255,255,.8)";
+          ctx.fillText(role.toUpperCase(), W / 2, H - 62 * S);
+        }
+
+        if (v.style === "studio") {
+          ctx.fillStyle = "#0d0d0c"; ctx.fillRect(0, 0, W, H);
+          if (state.img) {
+            // tight face crop in a centered frame with dark surround
+            var fw = W * 0.78, fh = H * 0.62, fx = (W - fw) / 2, fy = H * 0.06;
+            ctx.save(); rr(ctx, fx, fy, fw, fh, 20 * S); ctx.clip();
+            drawCover(ctx, state.img, fx, fy, fw, fh, state.zoom * 1.55, state.panX, state.panY, 0.08);
+            ctx.restore();
+            var vg = ctx.createRadialGradient(W / 2, fy + fh / 2, fh * 0.3, W / 2, fy + fh / 2, fh * 0.95);
+            vg.addColorStop(0, "rgba(0,0,0,0)"); vg.addColorStop(1, "rgba(0,0,0,.35)");
+            ctx.fillStyle = vg; ctx.fillRect(fx, fy, fw, fh);
+          } else drawPlaceholder(ctx, W, H, "dark", false);
+          ctx.textAlign = "center";
+          // shrink headline until the whole text block fits above the name line
+          var size4 = 74 * S, lines4 = [];
+          while (size4 > 30 * S) {
+            ctx.font = (font.italic ? "italic " : "") + font.weight + " " + size4 + "px " + font.family;
+            lines4 = wrapLines(ctx, headline, W * 0.86);
+            var blockH = lines4.length * size4 * 1.18 + (sub ? 100 * S : 0);
+            if (blockH <= 240 * S) break;
+            size4 -= 5 * S;
+          }
+          ctx.fillStyle = accent;
+          ctx.font = "700 " + Math.round(27 * S) + 'px "Be Vietnam Pro", sans-serif';
+          ctx.fillText(role.toUpperCase(), W / 2, H - 268 * S);
+          ctx.font = (font.italic ? "italic " : "") + font.weight + " " + size4 + "px " + font.family;
+          ctx.fillStyle = "#f5f1e8";
+          var ly4 = H - 250 * S;
+          lines4.forEach(function (ln) { ly4 += size4 * 1.18; ctx.fillText(ln, W / 2, ly4); });
+          if (sub && ly4 < H - 170 * S) {
+            ctx.font = "italic 500 " + Math.round(29 * S) + 'px "Playfair Display", serif';
+            ctx.fillStyle = "rgba(245,241,232,.75)";
+            wrapLines(ctx, sub, W * 0.8).slice(0, 2).forEach(function (ln) { ly4 += 44 * S; ctx.fillText(ln, W / 2, ly4); });
+          }
+          ctx.fillStyle = "#f5f1e8";
+          ctx.font = "700 " + Math.round(32 * S) + 'px "Be Vietnam Pro", sans-serif';
+          ctx.fillText(name, W / 2, H - 96 * S);
+          if (badge) {
+            ctx.font = "600 " + Math.round(23 * S) + 'px "Be Vietnam Pro", sans-serif';
+            ctx.fillStyle = accent;
+            ctx.fillText(badge, W / 2, H - 52 * S);
+          }
+        }
+      }
+
+      function drawPlaceholderSide(ctx, x, y, w, h) {
+        ctx.save();
+        ctx.fillStyle = "rgba(255,255,255,.16)";
+        var cx = x + w / 2, cy = y + h * 0.4, r = Math.min(w, h) * 0.16;
+        ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(cx - r * 2, y + h);
+        ctx.bezierCurveTo(cx - r * 1.9, y + h * 0.68, cx - r * 0.9, y + h * 0.62, cx, y + h * 0.62);
+        ctx.bezierCurveTo(cx + r * 0.9, y + h * 0.62, cx + r * 1.9, y + h * 0.68, cx + r * 2, y + h);
+        ctx.closePath(); ctx.fill();
+        ctx.restore();
+      }
+
+      function drawBadgeScaled(ctx, text, cx, y, accent, S) {
+        if (!text) return;
+        ctx.save();
+        ctx.font = "700 " + Math.round(25 * S) + 'px "Be Vietnam Pro", sans-serif';
+        var tw = ctx.measureText(text).width;
+        var h = 54 * S, w = tw + 52 * S;
+        ctx.fillStyle = accent;
+        rr(ctx, cx - w / 2, y, w, h, h / 2); ctx.fill();
+        ctx.fillStyle = luminance(accent) > 0.6 ? "#1d1a12" : "#ffffff";
+        ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        ctx.fillText(text, cx, y + h / 2 + 1);
+        ctx.restore();
+      }
+
+      /* =============== Preview grid =============== */
+      var canvases = [];
+      function buildGrid() {
+        grid.innerHTML = ""; canvases = [];
+        for (var i = 0; i < state.count; i++) {
+          (function (v, idx) {
+            var card = document.createElement("div"); card.className = "card";
+            var cv = document.createElement("canvas");
+            cv.setAttribute("aria-label", "Xem trước " + v.name + " — kéo để dời vị trí ảnh");
+            var foot = document.createElement("div"); foot.className = "card-foot";
+            foot.innerHTML = '<div class="t"><strong></strong><span></span></div>';
+            foot.querySelector("strong").textContent = v.name;
+            foot.querySelector("span").textContent = state.img ? v.desc : "Bố cục mẫu — tải ảnh chân dung ở bước 1 để hoàn thiện";
+            var dl = document.createElement("button");
+            dl.className = "btn small"; dl.type = "button";
+            dl.innerHTML = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M4 21h16"/></svg> Tải PNG';
+            dl.addEventListener("click", function () { exportOne(idx); });
+            foot.appendChild(dl);
+            card.appendChild(cv); card.appendChild(foot);
+            grid.appendChild(card);
+            canvases.push({ canvas: cv, variant: v });
+            attachPan(cv);
+          })(VARIANTS[i], i);
+        }
+        buildExportList();
+        renderAll();
+      }
+
+      function buildExportList() {
+        var list = $("exportList"); list.innerHTML = "";
+        for (var i = 0; i < state.count; i++) {
+          (function (idx) {
+            var b = document.createElement("button");
+            b.className = "btn"; b.type = "button"; b.style.justifyContent = "flex-start";
+            b.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M4 21h16"/></svg> ' + VARIANTS[idx].name + " — PNG";
+            b.addEventListener("click", function () { exportOne(idx); });
+            list.appendChild(b);
+          })(i);
+        }
+      }
+
+      var renderQueued = false;
+      function renderAll() {
+        if (renderQueued) return;
+        renderQueued = true;
+        requestAnimationFrame(function () {
+          renderQueued = false;
+          var r = RATIOS[state.ratio];
+          canvases.forEach(function (c) {
+            var pw = 620, ph = Math.round(pw * r[1] / r[0]);
+            if (c.canvas.width !== pw) { c.canvas.width = pw; c.canvas.height = ph; }
+            renderVariant(c.canvas.getContext("2d"), pw, ph, c.variant);
+          });
+        });
+      }
+
+      /* =============== Export =============== */
+      function exportOne(idx) {
+        var v = VARIANTS[idx];
+        var r = RATIOS[state.ratio];
+        var W = 1440, H = Math.round(W * r[1] / r[0]);
+        var cv = document.createElement("canvas"); cv.width = W; cv.height = H;
+        renderVariant(cv.getContext("2d"), W, H, v);
+        var a = document.createElement("a");
+        a.download = "anh-thuong-hieu-" + (idx + 1) + "-" + v.style + ".png";
+        a.href = cv.toDataURL("image/png");
+        document.body.appendChild(a); a.click(); a.remove();
+        toast("Đã tải " + v.name + " (" + W + "×" + H + "px)");
+      }
+      function exportAll() {
+        for (var i = 0; i < state.count; i++) {
+          (function (idx) { setTimeout(function () { exportOne(idx); }, idx * 450); })(i);
+        }
+      }
+
+      /* =============== Pan on canvas =============== */
+      function attachPan(cv) {
+        var drag = null;
+        cv.addEventListener("pointerdown", function (e) {
+          drag = { x: e.clientX, y: e.clientY, px: state.panX, py: state.panY };
+          cv.setPointerCapture(e.pointerId);
+        });
+        cv.addEventListener("pointermove", function (e) {
+          if (!drag) return;
+          var rect = cv.getBoundingClientRect();
+          state.panX = clamp(drag.px + (e.clientX - drag.x) / rect.width * 1.6, -1, 1);
+          state.panY = clamp(drag.py + (e.clientY - drag.y) / rect.height * 1.6, -1, 1);
+          renderAll();
+        });
+        ["pointerup", "pointercancel"].forEach(function (ev) {
+          cv.addEventListener(ev, function () { drag = null; });
+        });
+      }
+      function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+
+      /* =============== Photo upload =============== */
+      var dz = $("dropzone"), fi = $("fileInput");
+      dz.addEventListener("click", function () { fi.click(); });
+      dz.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fi.click(); } });
+      $("btnChangePhoto").addEventListener("click", function () { fi.click(); });
+      ["dragover", "dragenter"].forEach(function (ev) {
+        dz.addEventListener(ev, function (e) { e.preventDefault(); dz.classList.add("drag"); });
+      });
+      ["dragleave", "drop"].forEach(function (ev) {
+        dz.addEventListener(ev, function (e) { e.preventDefault(); dz.classList.remove("drag"); });
+      });
+      dz.addEventListener("drop", function (e) {
+        var f = e.dataTransfer.files && e.dataTransfer.files[0];
+        if (f) loadPhoto(f);
+      });
+      fi.addEventListener("change", function () { if (fi.files[0]) loadPhoto(fi.files[0]); });
+
+      function loadPhoto(file) {
+        if (!/^image\//.test(file.type)) { toast("File này không phải ảnh — hãy chọn JPG hoặc PNG."); return; }
+        var url = URL.createObjectURL(file);
+        var img = new Image();
+        img.onload = function () {
+          state.img = img; state.imgName = file.name;
+          state.imgW = img.naturalWidth; state.imgH = img.naturalHeight;
+          state.panX = 0; state.panY = 0; state.zoom = 1;
+          $("zoomRange").value = 100; $("zoomOut").textContent = "100%";
+          $("photoThumb").src = url;
+          $("photoName").textContent = file.name;
+          $("photoSize").textContent = img.naturalWidth + " × " + img.naturalHeight + "px";
+          $("photoRow").classList.add("show");
+          $("photoControls").style.display = "block";
+          dz.style.display = "none";
+          $("photoDone").classList.add("show");
+          updateDone();
+          $("stageSub").textContent = "Kéo trực tiếp trên ảnh để chỉnh vị trí khuôn mặt. Đổi chữ ở cột bên trái — ảnh cập nhật ngay.";
+          buildGrid();
+          toast("Đã nhận ảnh chân dung — chọn nội dung chữ để hoàn thiện.");
+        };
+        img.onerror = function () { toast("Không đọc được file ảnh này, anh/chị thử ảnh khác nhé."); };
+        img.src = url;
+      }
+
+      /* =============== Controls wiring =============== */
+      function bindText(id, key) {
+        $(id).addEventListener("input", function () { state[key] = this.value; updateDone(); renderAll(); });
+      }
+      bindText("fName", "name"); bindText("fRole", "role");
+      bindText("fHeadline", "headline"); bindText("fSub", "sub"); bindText("fBadge", "badge");
+
+      function updateDone() {
+        // "Sẵn sàng đăng" chỉ đúng khi đã có cả ảnh chân dung lẫn câu chữ
+        $("textDone").classList.toggle("show", !!state.img && !!state.headline.trim());
+      }
+
+      $("zoomRange").addEventListener("input", function () {
+        state.zoom = this.value / 100;
+        $("zoomOut").textContent = this.value + "%";
+        renderAll();
+      });
+      $("scrimRange").addEventListener("input", function () {
+        state.scrim = this.value / 100;
+        $("scrimOut").textContent = this.value + "%";
+        renderAll();
+      });
+
+      // Tabs
+      document.querySelectorAll(".tabs button").forEach(function (b) {
+        b.addEventListener("click", function () {
+          document.querySelectorAll(".tabs button").forEach(function (x) { x.classList.remove("active"); });
+          b.classList.add("active");
+          document.querySelectorAll(".tabpane").forEach(function (p) { p.classList.remove("active"); });
+          $("tab-" + b.getAttribute("data-tab")).classList.add("active");
+        });
+      });
+
+      // Count
+      $("countSeg").querySelectorAll("button").forEach(function (b) {
+        b.addEventListener("click", function () {
+          $("countSeg").querySelectorAll("button").forEach(function (x) { x.classList.remove("active"); });
+          b.classList.add("active");
+          state.count = parseInt(b.getAttribute("data-count"), 10);
+          buildGrid();
+        });
+      });
+      // Font
+      $("fontSeg").querySelectorAll("button").forEach(function (b) {
+        b.addEventListener("click", function () {
+          $("fontSeg").querySelectorAll("button").forEach(function (x) { x.classList.remove("active"); });
+          b.classList.add("active");
+          state.font = b.getAttribute("data-font");
+          renderAll();
+        });
+      });
+      // Ratio
+      $("ratioSel").addEventListener("change", function () {
+        state.ratio = this.value;
+        canvases.forEach(function (c) { c.canvas.width = 0; });
+        renderAll();
+      });
+      // Accent
+      $("swatches").querySelectorAll(".swatch").forEach(function (b) {
+        b.addEventListener("click", function () {
+          $("swatches").querySelectorAll(".swatch").forEach(function (x) { x.classList.remove("active"); });
+          b.classList.add("active");
+          state.accent = b.getAttribute("data-accent");
+          renderAll();
+        });
+      });
+
+      $("btnDownloadAll").addEventListener("click", exportAll);
+      $("btnDownloadAllTop").addEventListener("click", exportAll);
+
+      /* =============== Suggestions =============== */
+      function applySet(set) {
+        state.headline = set.h; state.sub = set.s; state.badge = set.b;
+        $("fHeadline").value = set.h; $("fSub").value = set.s; $("fBadge").value = set.b;
+        updateDone(); renderAll();
+      }
+      function showSuggestions() {
+        var key = $("industrySel").value;
+        var sets = SUGGESTIONS[key] || SUGGESTIONS["chuyen gia"];
+        var box = $("suggestChips"); box.innerHTML = "";
+        sets.forEach(function (set, i) {
+          var c = document.createElement("button");
+          c.type = "button"; c.className = "chip";
+          c.textContent = (i + 1) + ". " + set.h;
+          c.addEventListener("click", function () { applySet(set); toast("Đã áp bộ chữ " + (i + 1) + " lên ảnh."); });
+          box.appendChild(c);
+        });
+        applySet(sets[state.suggestIdx % sets.length]);
+      }
+      $("btnSuggest").addEventListener("click", function () {
+        state.suggestIdx++;
+        showSuggestions();
+        toast("Đã gợi ý bộ chữ mới — bấm các nhãn bên dưới để đổi câu khác.");
+      });
+      $("industrySel").addEventListener("change", function () { state.suggestIdx = 0; showSuggestions(); });
+
+      /* =============== Content filter =============== */
+      var STRONG = ["không", "hãy", "đừng", "muốn", "cần", "niềm tin", "uy tín", "chất lượng", "tương lai", "thành công", "giá trị", "khách hàng", "bắt đầu", "thay đổi", "bí quyết", "sai lầm", "cách", "tại sao", "luôn", "mỗi ngày", "đầu tiên", "quan trọng"];
+      function scoreLine(line) {
+        var s = 0, low = line.toLowerCase();
+        if (line.length >= 18 && line.length <= 70) s += 3;
+        else if (line.length > 70 && line.length <= 95) s += 1;
+        STRONG.forEach(function (w) { if (low.indexOf(w) >= 0) s += 1; });
+        if (/[!?]$/.test(line)) s += 1;
+        if ((line.match(/#/g) || []).length > 1) s -= 2;
+        if (/https?:\/\//.test(line)) s -= 5;
+        if (/^\d+[.)]/.test(line)) s -= 1;
+        return s;
+      }
+      function shorten(line, max) {
+        if (line.length <= max) return line;
+        var cut = line.slice(0, max);
+        var sp = cut.lastIndexOf(" ");
+        return (sp > max * 0.55 ? cut.slice(0, sp) : cut).replace(/[,;:]\s*$/, "") + "…";
+      }
+      $("btnFilter").addEventListener("click", function () {
+        var raw = $("rawText").value.trim();
+        var box = $("pickList"); box.innerHTML = "";
+        if (!raw) {
+          box.innerHTML = '<div class="empty-note">Hãy dán nội dung vào ô trên trước — bài viết, ghi chú hay ý tưởng đều được.</div>';
+          return;
+        }
+        var parts = raw.split(/\n+|(?<=[.!?…])\s+/)
+          .map(function (x) { return x.replace(/^[\s•\-–—*#]+/, "").trim(); })
+          .filter(function (x) { return x.length >= 10 && x.length <= 160; });
+        var seen = {}, uniq = [];
+        parts.forEach(function (p) { var k = p.toLowerCase(); if (!seen[k]) { seen[k] = 1; uniq.push(p); } });
+        uniq.sort(function (a, b) { return scoreLine(b) - scoreLine(a); });
+        var top = uniq.slice(0, 6);
+        if (!top.length) {
+          box.innerHTML = '<div class="empty-note">Chưa lọc được câu phù hợp — thử dán đoạn nội dung dài hơn một chút nhé.</div>';
+          return;
+        }
+        top.forEach(function (line, i) {
+          var b = document.createElement("button");
+          b.type = "button"; b.className = "pick";
+          var rank = document.createElement("span"); rank.className = "rank"; rank.textContent = "Câu " + (i + 1);
+          var txt = document.createElement("span"); txt.textContent = line;
+          b.appendChild(rank); b.appendChild(txt);
+          b.addEventListener("click", function () {
+            var head = shorten(line, 92);
+            state.headline = head; $("fHeadline").value = head;
+            var second = top.filter(function (x) { return x !== line; })[0];
+            if (second && !state.sub) {
+              var s2 = shorten(second, 90);
+              state.sub = s2; $("fSub").value = s2;
+            }
+            updateDone(); renderAll();
+            toast("Đã đặt câu này làm tiêu đề trên ảnh.");
+          });
+          box.appendChild(b);
+        });
+        toast("Đã lọc được " + top.length + " câu đăng được ngay — bấm để chọn.");
+      });
+
+      /* =============== Init =============== */
+      function init() {
+        showSuggestions();
+        buildGrid();
+        if (document.fonts && document.fonts.ready) document.fonts.ready.then(renderAll);
+      }
+      init();
+    </script>
+  </body>
+</html>
